@@ -22,9 +22,9 @@ A solução combina:
 
 ### 1. Pré-requisitos
 
-- Python **3.10+** instalado.
+- Python **3.10+** instalado;
 - `pip` instalado e funcionando;
-- Jupyter Notebook ou Jupyter Lab (já incluído no `requirements.txt`).
+- Jupyter Notebook (instalado via `requirements.txt`).
 
 ### 2. Clonar o repositório
 
@@ -48,7 +48,7 @@ source .venv/bin/activate
 
 ### 4. Instalar as dependências
 
-Todas as bibliotecas necessárias (NumPy, Matplotlib, Jupyter etc.) estão listadas em `requirements.txt`.
+Todas as bibliotecas necessárias (NumPy, Matplotlib, Jupyter Notebook etc.) estão listadas em `requirements.txt`.
 
 ```bash
 pip install --upgrade pip
@@ -63,24 +63,24 @@ A simulação é executada via notebook Jupyter, **não há interface web**.
 # Na raiz do projeto
 jupyter notebook notebooks/simulacao-trafego.ipynb
 ```
+
 No Jupyter:
 
-1. **Célula 1–2 (imports)**: garante que as bibliotecas estão carregadas.
-2. **Célula de parâmetros**: ajuste, se desejar, por exemplo:
-   - `DURACAO_SIMULACAO_MIN`: duração total da simulação (em minutos);
-   - `MEDIA_CARROS_A`, `MEDIA_CARROS_B`: taxa média de chegada de veículos por minuto;
-   - `G_MIN`, `G_MAX`: limites mínimo/máximo do tempo de verde;
-   - `PROB_PEDESTRE`, `PROB_PRIORIDADE`: probabilidade de pedestres e eventos de prioridade.
-3. **Células de definição de funções/classes**: execute uma vez (não precisam ser alteradas).
-4. **Última célula**: roda a simulação, exibe as métricas no console e gera os gráficos.
+1. Execute as células **de cima para baixo** (por exemplo, `Kernel > Restart & Run All`);
+2. A simulação irá:
+   - gerar chegadas de veículos nas vias A e B;
+   - aplicar o controlador heurístico atuado;
+   - calcular métricas de desempenho;
+   - plotar gráficos das filas e da distribuição dos tempos de verde.
 
-Execute as células **de cima para baixo** .
+Os principais parâmetros (tempo de simulação, taxa de chegada, `G_MIN`, `G_MAX`, etc.) podem ser ajustados na célula de parâmetros.
+
 ### 6. Gráficos e saída em `/assets`
 
 Ao final da execução da última célula:
 
 - Os gráficos são exibidos na interface do Jupyter;
-- UUma imagem com os resultados encontrados é gerado em `assets/`.
+- Uma imagem com os resultados encontrados é gerada na pasta `assets` **na raiz do projeto**:
 
 ```text
 assets/resultados_simulacao.png
