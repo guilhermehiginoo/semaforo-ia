@@ -30,7 +30,7 @@ A solução combina:
 
 ```bash
 # Clone o repositório
-git clone [https://github.com/guilhermehiginoo/semaforo-ia.git](https://github.com/guilhermehiginoo/semaforo-ia.git)
+git clone https://github.com/guilhermehiginoo/semaforo-ia.git
 
 # Entre na pasta do projeto
 cd semaforo-ia
