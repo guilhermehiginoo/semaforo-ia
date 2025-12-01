@@ -62,7 +62,7 @@ A simulação é executada via notebook Jupyter, **não há interface web**.
 ```bash
 # Na raiz do projeto
 jupyter notebook notebooks/simulacao-trafego.ipynb
-
+```
 No Jupyter:
 
 1. **Célula 1–2 (imports)**: garante que as bibliotecas estão carregadas.
