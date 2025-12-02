@@ -293,15 +293,48 @@ if st.session_state.get('simulated'):
     times_act = [s['t'] for s in metrics_act['snapshots']]
     qA_act = [s['qA'] for s in metrics_act['snapshots']]
     qB_act = [s['qB'] for s in metrics_act['snapshots']]
-    fig.add_trace(go.Scatter(x=times_act, y=qA_act, name="Via A (atuado)", line=dict(color='blue')), row=1, col=1)
-    fig.add_trace(go.Scatter(x=times_act, y=qB_act, name="Via B (atuado)", line=dict(color='red')), row=1, col=1)
+    # cores com bom contraste
+    fig.add_trace(
+        go.Scatter(
+            x=times_act,
+            y=qA_act,
+            name="Via A (atuado)",
+            line=dict(color="#1f77b4")  # azul
+        ),
+        row=1, col=1
+    )
+    fig.add_trace(
+        go.Scatter(
+            x=times_act,
+            y=qB_act,
+            name="Via B (atuado)",
+            line=dict(color="#ff7f0e")  # laranja
+        ),
+        row=1, col=1
+    )
     
     # Q-Learning
     times_qlearn = [s['t'] for s in metrics_qlearn['snapshots']]
     qA_qlearn = [s['qA'] for s in metrics_qlearn['snapshots']]
     qB_qlearn = [s['qB'] for s in metrics_qlearn['snapshots']]
-    fig.add_trace(go.Scatter(x=times_qlearn, y=qA_qlearn, name="Via A (Q-Learning)", line=dict(color='blue', dash='dot')), row=2, col=1)
-    fig.add_trace(go.Scatter(x=times_qlearn, y=qB_qlearn, name="Via B (Q-Learning)", line=dict(color='red', dash='dot')), row=2, col=1)
+    fig.add_trace(
+        go.Scatter(
+            x=times_qlearn,
+            y=qA_qlearn,
+            name="Via A (Q-Learning)",
+            line=dict(color="#2ca02c", dash="dot")  # verde
+        ),
+        row=2, col=1
+    )
+    fig.add_trace(
+        go.Scatter(
+            x=times_qlearn,
+            y=qB_qlearn,
+            name="Via B (Q-Learning)",
+            line=dict(color="#9467bd", dash="dot")  # roxo
+        ),
+        row=2, col=1
+    )
     
     fig.update_xaxes(title_text="Tempo (s)", row=2, col=1)
     fig.update_yaxes(title_text="Fila (veículos)", row=1, col=1)
@@ -319,9 +352,28 @@ if st.session_state.get('simulated'):
         verdes_A_act = [t for p, t in metrics_act['green_log'] if p == 'A']
         verdes_B_act = [t for p, t in metrics_act['green_log'] if p == 'B']
         fig_act = go.Figure()
-        fig_act.add_trace(go.Histogram(x=verdes_A_act, name='Via A', marker_color='blue', opacity=0.7))
-        fig_act.add_trace(go.Histogram(x=verdes_B_act, name='Via B', marker_color='red', opacity=0.7))
-        fig_act.update_layout(barmode='overlay', xaxis_title='Duração (s)', yaxis_title='Frequência', height=400)
+        fig_act.add_trace(
+            go.Histogram(
+                x=verdes_A_act,
+                name="Via A",
+                marker_color="#1f77b4",  # azul
+                opacity=0.75
+            )
+        )
+        fig_act.add_trace(
+            go.Histogram(
+                x=verdes_B_act,
+                name="Via B",
+                marker_color="#ff7f0e",  # laranja
+                opacity=0.75
+            )
+        )
+        fig_act.update_layout(
+            barmode="overlay",
+            xaxis_title="Duração (s)",
+            yaxis_title="Frequência",
+            height=400
+        )
         st.plotly_chart(fig_act, use_container_width=True)
     
     with col2:
@@ -329,9 +381,28 @@ if st.session_state.get('simulated'):
         verdes_A_qlearn = [t for p, t in metrics_qlearn['green_log'] if p == 'A']
         verdes_B_qlearn = [t for p, t in metrics_qlearn['green_log'] if p == 'B']
         fig_qlearn = go.Figure()
-        fig_qlearn.add_trace(go.Histogram(x=verdes_A_qlearn, name='Via A', marker_color='blue', opacity=0.7))
-        fig_qlearn.add_trace(go.Histogram(x=verdes_B_qlearn, name='Via B', marker_color='red', opacity=0.7))
-        fig_qlearn.update_layout(barmode='overlay', xaxis_title='Duração (s)', yaxis_title='Frequência', height=400)
+        fig_qlearn.add_trace(
+            go.Histogram(
+                x=verdes_A_qlearn,
+                name="Via A",
+                marker_color="#2ca02c",  # verde
+                opacity=0.75
+            )
+        )
+        fig_qlearn.add_trace(
+            go.Histogram(
+                x=verdes_B_qlearn,
+                name="Via B",
+                marker_color="#9467bd",  # roxo
+                opacity=0.75
+            )
+        )
+        fig_qlearn.update_layout(
+            barmode="overlay",
+            xaxis_title="Duração (s)",
+            yaxis_title="Frequência",
+            height=400
+        )
         st.plotly_chart(fig_qlearn, use_container_width=True)
 
     # Comparação final
@@ -353,11 +424,8 @@ if st.session_state.get('simulated'):
         ]
     })
 
-    st.dataframe(
-        comparison_df.style.highlight_max(subset=['Veículos Atendidos'], color='lightgreen')
-                          .highlight_min(subset=['Espera Média (s)', 'Espera Máxima (s)'], color='lightgreen'),
-        use_container_width=True
-    )
+    # DataFrame simples, sem highlight em verde
+    st.dataframe(comparison_df, use_container_width=True)
 
 else:
     st.info("👈 Configure os parâmetros na barra lateral e clique em 'Rodar Simulação'")
