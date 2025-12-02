@@ -11,12 +11,17 @@
 * MAURÍCIO COSTA PIRES (20240010967)
 
 ## Descrição do Projeto
-O projeto Semaforo-IA desenvolve um controlador de semáforo inteligente cujo objetivo principal é minimizar o tempo de espera dos veículos em um cruzamento. Utilizamos simulações baseadas em filas, sensores ruidosos e eventos de prioridade para comparar heurísticas tradicionais com abordagens orientadas por IA (ex.: aprendizado por reforço ou modelos preditivos). A simulação permite experimentar parâmetros como taxa de chegada, tempo mínimo/ máximo de verde, detecção de pedestres e eventos de prioridade (ambulância, ônibus).
+O projeto Semaforo-IA desenvolve um controlador de semáforo inteligente cujo objetivo principal é minimizar o tempo de espera dos veículos em um cruzamento. Utilizamos simulações baseadas em filas, sensores ruidosos e eventos de prioridade para comparar:
+
+- Um **controlador atuado** (heurística adaptativa baseada em filas);
+- Um **controlador de Q-Learning tabular** (aprendizado por reforço), com modelo pré-treinado.
+
+A simulação permite experimentar parâmetros como taxa de chegada, tempo mínimo/máximo de verde, detecção de pedestres e eventos de prioridade (ambulância, ônibus).
 
 A solução combina:
-- Um ambiente de simulação discreto (filas e dinâmica simples de veículos).
-- Controladores atuados (heurísticos adaptativos).
-- Integração para treinar/avaliar agentes de IA visando reduzir o tempo médio de espera e aumentar a vazão.
+- Um ambiente de simulação discreto (filas e dinâmica simples de veículos);
+- Controladores atuados (heurísticos adaptativos);
+- Um agente de IA treinado para reduzir o tempo médio de espera e aumentar a vazão.
 
 ## Guia de Instalação e Execução
 
@@ -24,7 +29,7 @@ A solução combina:
 
 - Python **3.10+** instalado;
 - `pip` instalado e funcionando;
-- Jupyter Notebook (instalado via `requirements.txt`).
+- Navegador web (para acessar a interface Streamlit).
 
 ### 2. Clonar o repositório
 
@@ -48,75 +53,149 @@ source .venv/bin/activate
 
 ### 4. Instalar as dependências
 
-Todas as bibliotecas necessárias (NumPy, Matplotlib, Jupyter Notebook etc.) estão listadas em `requirements.txt`.
+Todas as bibliotecas necessárias (NumPy, Streamlit, Plotly, Jupyter etc.) estão listadas em `requirements.txt`.
 
 ```bash
 pip install --upgrade pip
 pip install -r requirements.txt
 ```
 
-### 5. Executar a simulação
+### 5. Executar a interface web (principal)
 
-A simulação é executada via notebook Jupyter, **não há interface web**.
+A forma principal de uso do projeto é via **interface web** em Streamlit.
 
 ```bash
 # Na raiz do projeto
+streamlit run app.py
+```
+
+Depois de rodar o comando acima, acesse no navegador:
+
+- `http://localhost:8501`
+
+Na interface você pode:
+
+1. Ajustar os parâmetros na barra lateral:
+   - duração da simulação (minutos);
+   - demanda das vias A e B (veículos/minuto);
+   - probabilidade de pedestres;
+   - probabilidade de veículos prioritários.
+2. Ajustar parâmetros avançados:
+   - verde mínimo (`G_MIN`);
+   - verde máximo (`G_MAX`);
+   - ciclo base;
+   - taxa de escoamento (veículos/s).
+3. Clicar em **“▶️ Rodar Simulação”**.
+
+A aplicação irá:
+
+- Simular o cruzamento com:
+  - **Controlador Atuado**;
+  - **Controlador Q-Learning (pré-treinado)**;
+- Mostrar métricas de desempenho de cada controlador:
+  - veículos atendidos;
+  - espera média;
+  - espera máxima;
+- Plotar:
+  - evolução das filas ao longo do tempo;
+  - distribuição dos tempos de verde;
+- Exibir uma tabela de comparação final entre Atuado e Q-Learning.
+
+> Observação: o modelo Q-Learning padrão é carregado automaticamente a partir de `models/qlearning_agent_20251202_103052_10k.pkl`.  
+> Se esse arquivo não existir, o sistema tenta usar o último modelo `qlearning_agent_*.pkl` da pasta `models/`. Se nenhum modelo for encontrado, o controlador Q-Learning é inicializado com Q-table vazia (modo “não treinado”).
+
+### 6. (Opcional) Executar simulações via Notebook
+
+Além da interface web, é possível explorar e treinar o agente Q-Learning diretamente nos notebooks.
+
+#### 6.1 Notebook de simulação heurística
+
+```bash
 jupyter notebook notebooks/simulacao-trafego.ipynb
 ```
 
-No Jupyter:
+Nesse notebook é possível:
 
-1. Execute as células **de cima para baixo** (por exemplo, `Kernel > Restart & Run All`);
-2. A simulação irá:
-   - gerar chegadas de veículos nas vias A e B;
-   - aplicar o controlador heurístico atuado;
-   - calcular métricas de desempenho;
-   - plotar gráficos das filas e da distribuição dos tempos de verde.
+- rodar a simulação apenas com o **controlador atuado**;
+- visualizar métricas e gráficos em Matplotlib;
+- ajustar manualmente parâmetros de simulação.
 
-Os principais parâmetros (tempo de simulação, taxa de chegada, `G_MIN`, `G_MAX`, etc.) podem ser ajustados na célula de parâmetros.
+#### 6.2 Notebook de Q-Learning
 
-### 6. Gráficos e saída em `/assets`
-
-Ao final da execução da última célula:
-
-- Os gráficos são exibidos na interface do Jupyter;
-- Uma imagem com os resultados encontrados é gerada na pasta `assets` **na raiz do projeto**:
-
-```text
-assets/resultados_simulacao.png
+```bash
+jupyter notebook notebooks/02-simulacao-trafego-qlearning.ipynb
 ```
 
-A pasta `assets/` é criada automaticamente se não existir.
+Esse notebook:
+
+- define o ambiente de simulação;
+- treina o agente de Q-Learning por milhares de episódios;
+- salva modelos treinados em `models/` (por exemplo, `qlearning_agent_YYYYMMDD_HHMMSS_10k.pkl`);
+- gera gráficos de aprendizado (tempo de espera, recompensa, robustez a ruído etc.).
+
+Após treinar um novo modelo, basta salvar como:
+
+```text
+models/qlearning_agent_20251202_103052_10k.pkl
+```
+
+ou deixar com outro nome no padrão `qlearning_agent_*.pkl` para que o `app.py` possa encontrá-lo.
 
 ## Estrutura dos Arquivos
 
+* `app.py`  
+  Interface web em Streamlit. Faz a simulação com:
+  - `ActuatedController` (heurístico);
+  - `QLearningController` (modelo pré-treinado, carregado de `models/`).
+
+* `src/`  
+  * `controllers.py`: implementa `ActuatedController` e `QLearningController` (inclui lógica de carregar modelo pré-treinado).
+  * `utils.py`: funções auxiliares (por exemplo, `ruido_sensor`).
+  * Outros módulos de suporte à simulação.
+
+* `models/`  
+  Modelos de Q-Learning treinados (arquivos `.pkl`), por exemplo:
+  - `qlearning_agent_20251202_103052_10k.pkl` (modelo padrão da entrega).
+
 * `notebooks/`  
-  * `simulacao-trafego.ipynb`: notebook principal com a simulação, cálculo de métricas e geração de gráficos.
+  * `simulacao-trafego.ipynb`: notebook principal de simulação heurística.
+  * `02-simulacao-trafego-qlearning.ipynb`: notebook de treinamento/avaliação do Q-Learning.
+
+* `assets/`  
+  Imagens dos gráficos gerados pelos notebooks (`*.png`).
+
 * `README.md`  
-  Descrição geral do projeto.
+  Este arquivo.
+
 * `requirements.txt`  
   Lista de dependências Python.
-* `assets/`  
-  Imagens dos gráficos gerados pela simulação.
 
 ## Resultados e Demonstração
 
-Executando `notebooks/simulacao-trafego.ipynb`, o projeto gera:
+Usando a interface web (`streamlit run app.py`), o projeto gera, para cada controlador:
 
 * **Métricas de desempenho**:
-  * total de veículos atendidos pelo cruzamento;
-  * tempo médio de espera (em segundos) dos veículos atendidos;
-  * contagem de eventos de prioridade (V2I) ao longo da simulação.
-* **Série temporal do tamanho das filas** em cada via:
+  * total de veículos atendidos;
+  * tempo médio de espera (em segundos);
+  * tempo máximo de espera.
+
+* **Série temporal do tamanho das filas**:
   * gráfico de linhas com o número de veículos nas filas das vias A e B ao longo do tempo;
-  * permite observar se as filas se estabilizam ou crescem sem limite.
+  * comparação lado a lado entre Atuado e Q-Learning.
+
 * **Distribuição dos tempos de verde**:
-  * histograma da duração das fases verdes para a via A e para a via B;
-  * evidencia como o controlador ajusta dinamicamente os tempos de verde de acordo com a demanda.
+  * histogramas da duração das fases verdes para via A e via B;
+  * permite analisar o padrão de alocação de verde de cada estratégia de controle.
+
+* **Tabela de comparação final**:
+  * consolida as métricas de Atuado vs Q-Learning;
+  * destaca automaticamente o melhor valor em cada métrica.
 
 ## Referências
 
 * Os dados de tráfego utilizados são **sintéticos**, gerados pela própria simulação usando processos de Poisson para modelar a chegada de veículos.
 * Materiais de apoio sobre:
+  * materiais e orientações dados em aula;
   * controladores de semáforo atuados e adaptativos;
-  * documentação das bibliotecas utilizadas (NumPy, Matplotlib, Jupyter Notebook).
+  * aprendizado por reforço (Q-Learning) aplicado a controle de tráfego;
+  * documentação das bibliotecas utilizadas (NumPy, Streamlit, Plotly, Jupyter).
