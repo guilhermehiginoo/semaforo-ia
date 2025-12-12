@@ -10,10 +10,7 @@ import os
 # Configuração da página
 st.set_page_config(page_title="Simulação de Tráfego", layout="wide")
 
-# =========================
 # Classes da simulação
-# =========================
-
 class Vehicle:
     def __init__(self, id, is_bus=False):
         self.id = id
@@ -171,11 +168,9 @@ def run_simulation(controller_cls, params, run_seed):
         "green_log": controller.green_times_log,
     }
 
-# =========================
 # Interface Streamlit
-# =========================
 
-st.title("🚦 Simulação de Cruzamento Semaforizado")
+st.title("SemaforoIA - Simulação de Tráfego")
 st.markdown("Comparação entre **Controlador Atuado** e **Q-Learning (pré-treinado)**")
 
 # Sidebar com parâmetros
@@ -221,11 +216,11 @@ default_model_path = os.path.join(MODELS_DIR, DEFAULT_MODEL_NAME)
 
 pretrained_path = None
 
-# 1) Tenta usar o modelo padrão fixo
+# Tenta usar o modelo padrão fixo
 if os.path.exists(default_model_path):
     pretrained_path = default_model_path
 else:
-    # 2) Se o padrão não existir, tenta achar o último modelo qlearning_agent_*.pkl
+    # Se o padrão não existir, tenta achar o último modelo qlearning_agent_*.pkl
     if os.path.isdir(MODELS_DIR):
         candidate_files = [
             f for f in os.listdir(MODELS_DIR)
@@ -293,13 +288,12 @@ if st.session_state.get('simulated'):
     times_act = [s['t'] for s in metrics_act['snapshots']]
     qA_act = [s['qA'] for s in metrics_act['snapshots']]
     qB_act = [s['qB'] for s in metrics_act['snapshots']]
-    # cores com bom contraste
     fig.add_trace(
         go.Scatter(
             x=times_act,
             y=qA_act,
             name="Via A (atuado)",
-            line=dict(color="#1f77b4")  # azul
+            line=dict(color="#1f77b4")
         ),
         row=1, col=1
     )
@@ -308,7 +302,7 @@ if st.session_state.get('simulated'):
             x=times_act,
             y=qB_act,
             name="Via B (atuado)",
-            line=dict(color="#ff7f0e")  # laranja
+            line=dict(color="#ff7f0e")
         ),
         row=1, col=1
     )
@@ -356,7 +350,7 @@ if st.session_state.get('simulated'):
             go.Histogram(
                 x=verdes_A_act,
                 name="Via A",
-                marker_color="#1f77b4",  # azul
+                marker_color="#1f77b4",
                 opacity=0.75
             )
         )
@@ -364,7 +358,7 @@ if st.session_state.get('simulated'):
             go.Histogram(
                 x=verdes_B_act,
                 name="Via B",
-                marker_color="#ff7f0e",  # laranja
+                marker_color="#ff7f0e",
                 opacity=0.75
             )
         )
@@ -385,7 +379,7 @@ if st.session_state.get('simulated'):
             go.Histogram(
                 x=verdes_A_qlearn,
                 name="Via A",
-                marker_color="#2ca02c",  # verde
+                marker_color="#2ca02c",
                 opacity=0.75
             )
         )
@@ -393,7 +387,7 @@ if st.session_state.get('simulated'):
             go.Histogram(
                 x=verdes_B_qlearn,
                 name="Via B",
-                marker_color="#9467bd",  # roxo
+                marker_color="#9467bd",
                 opacity=0.75
             )
         )
@@ -424,7 +418,6 @@ if st.session_state.get('simulated'):
         ]
     })
 
-    # DataFrame simples, sem highlight em verde
     st.dataframe(comparison_df, use_container_width=True)
 
 else:
