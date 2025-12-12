@@ -86,18 +86,16 @@ class QLearningController:
             try:
                 with open(pretrained_path, "rb") as f:
                     loaded = pickle.load(f)
-                # aceita tanto objeto agente quanto só a q_table
                 if hasattr(loaded, "q_table"):
                     q_src = loaded.q_table
                 else:
                     q_src = loaded
-                # garante defaultdict com shape correto
                 if isinstance(q_src, defaultdict):
                     self.q_table = q_src
                 else:
                     self.q_table = defaultdict(lambda: np.zeros(2))
                     self.q_table.update(q_src)
-                # exploração praticamente desligada para uso em teste
+                # exploração desligada porque o modelo já está treinado
                 self.epsilon = params.get("epsilon", 0.0)
             except Exception as e:
                 # Falha silenciosa mas controlada: usa Q-table vazia
@@ -134,7 +132,6 @@ class QLearningController:
             return np.argmax(self.q_table[state])
 
     def step(self, dt, training=False, **kwargs):
-        # Gerencia amarelo
         if self.in_yellow:
             self.yellow_timer += dt
             if self.yellow_timer >= self.yellow_time:
